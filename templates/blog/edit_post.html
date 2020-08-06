@@ -1,0 +1,74 @@
+{% extends "head.html" %}
+{% block body %}
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top h-fix">
+    <div class="container">
+
+	  <a class="navbar-brand font-weight-bold" href="{{ url_for('home') }}">Blog</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav pl-2">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('home') }}">Главная
+            </a>
+          </li>
+		</ul>
+		
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active-lnk" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="mr-2">{{ current_user.name }}</span><img class="rounded-circle fit-small" src="{{ url_for('static', filename='avatars/' + current_user.avatar_id) }}" alt="">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{ url_for('user', username=current_user.name) }}">Профиль</a>
+              <a class="dropdown-item" href="{{ url_for('profile') }}">Настройки</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{{ url_for('logout') }}">Выйти</a>
+            </div>
+          </li>
+        </ul>
+	  </div>
+	</div>
+  </nav>
+
+  <!-- Edit Form -->
+  <div class="container pt-4">
+    <form action="{{ url_for('edit_post', post_id=post.id) }}" method="POST" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+      <div class="col-lg-9 pt-3">
+		<h3 class="py-2">Напишите что-нибудь</h3>
+		
+        <div class="form-group shadow">
+          {{ form.title(class="form-control", placeholder=form.title.label.text) }}
+		</div>
+		
+        <div class="form-group shadow">
+          {{ form.description(class="form-control", placeholder=form.description.label.text) }}
+		</div>
+		
+        <div class="form-group shadow">
+          {{ form.body(class="form-control", placeholder=form.body.label.text, rows=10) }}
+		</div>
+		
+        <div class="form-group float-right">
+          <button type="button" id="add" class="btn btn-secondary">Добавить шапку</button>
+          {{ form.photo(style="display: none;") }}
+          {{ form.submit(class="btn btn-success") }}
+		</div>
+		
+      </div>
+    </form>
+  </div>
+
+  <!-- Upload Script -->
+  <script>
+    $("button[id='add']").click(function() {
+    	$("input[id='image']").click();
+    });
+  </script>
+
+</body>
+{% endblock %}

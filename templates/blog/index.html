@@ -1,0 +1,157 @@
+{% extends "head.html" %}
+{% block body %}
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top h-fix">
+    <div class="container">
+
+      <a class="navbar-brand font-weight-bold" href="{{ url_for('home') }}">Blog</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav pl-2">
+          <li class="nav-item active">
+            <a class="nav-link active-lnk" href="{{ url_for('home') }}">Главная
+            <span class="sr-only">(current)</span>
+            </a>
+          </li>
+		</ul>
+		
+        <ul class="navbar-nav ml-auto">
+		    {% if current_user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="mr-2">{{ current_user.name }}</span><img class="rounded-circle fit-small" src="{{ url_for('static', filename='avatars/' + current_user.avatar_id) }}" alt="">
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{ url_for('user', username=current_user.name) }}">Профиль</a>
+              <a class="dropdown-item" href="/profile">Настройки</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{{ url_for('logout') }}">Выйти</a>
+            </div>
+          </li>
+        </ul>
+        {% else %}
+        <li class="nav-item">
+          <a class="btn btn-outline-light" href="{{ url_for('login') }}">Вход</a>
+          <a class="btn btn-primary" href="{{ url_for('register') }}">Регистрация</a>
+        </li>
+        {% endif %}
+        </ul>
+	  </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container pb-5">
+    <div class="row">
+      <!-- Blog Entries Column -->
+      <div class="col-md-8 my-5">
+        <!-- Blog Post -->
+        {% if posts %}
+        {% for post in reversed(posts) %}
+        <div class="card mb-4">
+          {% if post.img %}
+          <img class="card-img-top" src="{{ url_for('static', filename='uploads/' + post.img) }}" alt="Card image cap">
+          {% endif %}
+          <div class="card-body">
+            <h2 class="card-title">{{ post.title }}</h2>
+            <p class="card-text pb-2">{{ post.description }}</p>
+          </div>
+          <div class="card-footer">
+            <small class="text-muted">{{ moment(post.date_created).format("L LT") }}, Автор: <a href="{{ url_for('user', username=post.author.name) }}">{{ post.author.name }}</a></small>
+            <a href="/post/{{post.id}}" class="btn btn-primary float-right btn-sm px-5">Читать</a>
+            {% if current_user.role == 1 and current_user.id == post.author.id %}
+            <a href="/edit_post/{{post.id}}" class="btn btn-secondary float-right mr-2 btn-sm px-5">Изменить</a>
+            <a href="/delete_post/{{post.id}}" class="btn btn-danger float-right mr-2 btn-sm px-5">Удалить</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="text-center">
+          <h4 class="pt-3">Здесь пока нет постов 😢</h4>
+          {% if current_user.role == 1 %}
+          <a href="{{ url_for('new_post') }}" class="btn btn-success">Создать</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Sidebar Widgets Column -->
+      <div class="col-md-4">
+        {% if current_user.role == 1%}
+        <div class="text-center mt-5">
+          <a href="{{ url_for('new_post') }}" class="btn btn-success w-100">Создать</a>
+        </div>
+
+        <!-- Search Widget -->
+        <div class="card mt-3">
+          {% else %}
+          <div class="card mt-5">
+          {% endif %}
+          <h5 class="card-header">Поиск</h5>
+          <div class="card-body">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Найти...">
+              <span class="input-group-append">
+              <button class="btn btn-secondary" type="button"><i class="fa fa-search"></i></button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters Widget -->
+        <div class="card my-3">
+          <h5 class="card-header">Фильтры</h5>
+          <div class="card-body">
+            <ul class="list-group d-block rounded">
+              <a href="{{ url_for('home', filter_by='today') }}">
+                <li class="list-group-item" id="today">Сегодня</li>
+              </a>
+              <a href="{{ url_for('home', filter_by='last_week') }}">
+                <li class="list-group-item" id="week">За неделю</li>
+              </a>
+              <a href="{{ url_for('home', filter_by='last_month') }}">
+                <li class="list-group-item" id="month">За месяц</li>
+              </a>
+            </ul>
+            <button class="btn btn-secondary btn-sm mt-2 btn-block" id="clear" style="display: none;" onclick="clearFilter();">Сбросить</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    function clearFilter(){
+      open('/', "_self");
+    }
+
+    var url = window.location.href;
+    var lastPart = url.substr(url.lastIndexOf('/') + 1);
+    
+    if (lastPart === "today") {
+    	$("#today").addClass('active');
+    	$("#week").removeClass('active');
+    	$("#month").removeClass('active');
+      document.getElementById("clear").style.display = "block";
+    }else if (lastPart === "last_week") {
+    	$("#week").addClass('active');
+    	$("#today").removeClass('active');
+    	$("#month").removeClass('active');
+      document.getElementById("clear").style.display = "block";
+    }
+    else if (lastPart === "last_month") {
+    	$("#month").addClass('active');
+    	$("#today").removeClass('active');
+    	$("#week").removeClass('active');
+      document.getElementById("clear").style.display = "block";
+    }else {
+      document.getElementById("clear").style.display = "none";
+    }
+  </script>
+</body>
+{% endblock %}

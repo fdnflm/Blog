@@ -1,0 +1,17 @@
+{% extends "head.html" %}
+{% block body %}
+<body>
+  <div class="container">
+    <div class="text-center pt-5">
+        <h2>Отказано в доступе. 403</h2>
+        {% if msg %}
+        <h5>{{msg}}</h5>
+        {% else %}
+        <h5>Похоже, что разработчик ограничил доступ для этого раздела сайта.</h5>
+        {% endif %}
+        <a href="{{ request.referrer }}" class="btn btn-dark mt-2">Вернуться назад</a>
+        <h1 class="text-center pt-5">:(</h1>
+    </div>
+  </div>
+</body>
+{% endblock %}
