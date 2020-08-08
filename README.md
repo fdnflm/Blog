@@ -58,7 +58,9 @@ Flask-Moment | 0.1
 Flask-Mail | 0.9.1
 Flask-SQLAlchemy | 2.4.3
 email-validator | 1.1.1
-Flask-WTF | 0.14.3
+Flask-WTF * | 0.14.3
+
+	* - Modified package
 
 ## Contacts
 [Telegram ✈️](https://t.me/fdnflm)
