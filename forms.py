@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError, Email
-from flask_wtf.file import FileField, FileRequired, FileAllowed
+from flask_wtf.file import FileField, FileRequired, FileAllowed, FileSize
 from werkzeug.utils import secure_filename
 from models import User
 
@@ -25,7 +25,7 @@ class RegistrationForm(FlaskForm):
 	        DataRequired(),
 	        Length(min=5,
 	               max=32,
-	               message="Минимальная длина - 6, Максимальная - 32")
+	               message="Минимальная длина - 5, Максимальная - 32")
 	    ])
 	password = PasswordField('Пароль', validators=[DataRequired()])
 	password_repeat = PasswordField('Повторите пароль',
@@ -56,7 +56,7 @@ class EditProfile(FlaskForm):
 	        DataRequired(),
 	        Length(min=5,
 	               max=32,
-	               message="Минимальная длина - 6, Максимальная - 32")
+	               message="Минимальная длина - 5, Максимальная - 32")
 	    ])
 	bio = TextAreaField('Описание',
 	                    validators=[
@@ -88,10 +88,14 @@ class EditPost(FlaskForm):
 	title = StringField('Заголовок', validators=[DataRequired()])
 	description = StringField('Описание', validators=[DataRequired()])
 	body = TextAreaField('Текст', validators=[DataRequired()])
-	photo = FileField(
-	    'image',
-	    validators=[FileAllowed(['jpg', 'jpeg', 'png'], 'Только фотографии')],
-	    id="image")
+	photo = FileField('image',
+	                  validators=[
+	                      FileAllowed(['jpg', 'jpeg', 'png'],
+	                                  'Только фотографии'),
+	                      FileSize(max_size=12582912,
+	                               message="Максимальный размер файла - 12 мб")
+	                  ],
+	                  id="image")
 	submit = SubmitField('Отправить')
 
 

@@ -14,15 +14,11 @@
             <a class="nav-link" href="{{ url_for('home') }}">Главная
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Галерея
-            </a>
-          </li>
         </ul>
         <ul class="navbar-nav ml-auto">
           {% if current_user.is_authenticated %}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle active-lnk" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="mr-2">{{ current_user.name }}</span><img class="rounded-circle fit-small" src="{{ url_for('static', filename='avatars/' + current_user.avatar_id) }}" alt="">
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -47,6 +43,9 @@
     <form action="/new_post" method="POST" enctype="multipart/form-data">
       {{ form.hidden_tag() }}
       <div class="col-lg-9 pt-3">
+        {% for error in form.photo.errors %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+        {% endfor %}
         <h3 class="py-2">Напишите что-нибудь</h3>
         <div class="form-group shadow">
           {{ form.title(class="form-control", placeholder=form.title.label.text) }}

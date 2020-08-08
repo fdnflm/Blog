@@ -21,3 +21,6 @@ MAIL_USE_SSL = False
 MAIL_USERNAME = "test@gmail.com"
 MAIL_PASSWORD = "test"
 MAIL_DEFAULT_SENDER = "test@gmail.com"
+
+TELEGRAM_TOKEN = ""
+CHANNEL_ID = ""

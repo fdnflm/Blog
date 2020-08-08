@@ -4,14 +4,15 @@ from flask import request, render_template, \
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from werkzeug.urls import url_parse
-from app import db, moment, app, mail
+from app import db, moment, app, mail, api
 from forms import LoginForm, EditProfile, UploadPhoto, EditPassword, EditPost, RegistrationForm, AddComment
 from flask_login import current_user, login_user, logout_user, login_required
 from models import User, Post, Comment, Like
-from misc import generate_id, check_confirmed
+from misc import generate_id, check_confirmed, InlineKeyboard, InlineButton
 import os
 from datetime import datetime, timedelta
 from flask_mail import Message
+from config import CHANNEL_ID, BASE_DIR
 
 
 @app.route("/")
@@ -56,7 +57,7 @@ def post(post_id):
 		combo.append((p, len(p.likes)))
 	filtered = reversed(sorted(combo[:3], key=lambda combo: combo[1]))
 	return render_template("blog/post.html", title=post.title, post=post, \
-                       form=form, comments=comments, total_likes=len(likes), is_liked=is_liked, lw_posts=filtered)
+                             form=form, comments=comments, total_likes=len(likes), is_liked=is_liked, lw_posts=filtered)
 
 
 @app.route("/delete_post/<post_id>")
@@ -235,10 +236,26 @@ def new_post():
 				picture = form.photo.data
 				post = Post(form.title.data, form.description.data,
 				            form.body.data, current_user.id)
+				# markup = InlineKeyboard()
+				# link = InlineButton(
+				#     "Читать в блоге",
+				#     request.url_root + f"post/{len(Post.query.all()) + 1}")
+				# markup.add(link)
 				if picture:
 					filename = secure_filename(generate_id(12) + ".jpg")
 					picture.save(os.path.join("static/uploads/", filename))
 					post.img = filename
+				# 	api.send_photo(
+				# 		CHANNEL_ID,
+				# 		open(BASE_DIR + f"\\static\\uploads\\{filename}",
+				# 				"rb"),
+				# 		f"*{post.title}*\n\n{post.description}",
+				# 		reply_markup=markup)
+				# else:
+				# 	api.send_message(
+				# 		CHANNEL_ID,
+				# 		f"*{post.title}*\n\n{post.description}",
+				# 		reply_markup=markup)
 				current_user.posts_value = current_user.posts_value + 1
 				db.session.add(post)
 				db.session.commit()
@@ -281,7 +298,8 @@ def send_mail():
 	link = request.url_root + f"confirm/{token}"
 	current_user.confirm_token = token
 	db.session.commit()
-	msg.body = f"Привет, {current_user.name}!\nВы недавно зарегистрировались в нашем блоге! Чтобы активировать аккаунт, перейдите по ссылке ниже\n{link}"
+	msg.body = f"Привет, {current_user.name}!\nВы недавно зарегистрировались в нашем блоге! \
+				Чтобы активировать аккаунт, перейдите по ссылке ниже\n{link}"
 	mail.send(msg)
 	return redirect("/unconfirmed")
 
@@ -302,6 +320,12 @@ def unconfirmed():
 	if current_user.confirmed:
 		return redirect("/")
 	return render_template("unconfirmed.html")
+
+
+@app.route("/telegram_api", methods=["POST"])
+def telegram_api():
+	print(request.json)
+	return {"ok": True}
 
 
 # @app.before_request
