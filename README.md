@@ -30,7 +30,7 @@ Personal Blog on Flask
 2. Add comments to the code.
 3. Add mobile view support
 4. Ban users
-5. Delete comments
+5. ~~Delete comments~~
 
 ## Screenshots
 ![Main page](screenshots/1.png)
