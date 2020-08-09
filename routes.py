@@ -114,6 +114,19 @@ def share():
 	return "1"
 
 
+@app.route("/delete_comment/<comment_id>")
+@login_required
+def delete_comment(comment_id):
+	if current_user.role == 1:
+		comment = Comment.query.filter_by(id=comment_id).first_or_404()
+		db.session.delete(comment)
+		db.session.commit()
+		return redirect(request.referrer)
+	else:
+		abort(403)
+	return redirect("/")
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 	if current_user.is_authenticated:

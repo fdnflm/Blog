@@ -4,7 +4,7 @@
   <!-- Navigation -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top h-fix">
     <div class="container">
-      <a class="navbar-brand font-weight-bold" href="{{ url_for('home') }}">Blog</a>
+	  <a class="navbar-brand font-weight-bold" href="{{ url_for('home') }}">Blog</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
       </button>
@@ -14,28 +14,22 @@
             <a class="nav-link" href="{{ url_for('home') }}">Главная
             </a>
           </li>
-        </ul>
+		</ul>
         <ul class="navbar-nav ml-auto">
-          {% if current_user.is_authenticated %}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle active-lnk" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="mr-2">{{ current_user.name }}</span><img class="rounded-circle fit-small" src="{{ url_for('static', filename='avatars/' + current_user.avatar_id) }}" alt="">
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">Профиль</a>
+              <a class="dropdown-item" href="{{ url_for('user', username=current_user.name) }}">Профиль</a>
+              <a class="dropdown-item" href="{{ url_for('profile') }}">Настройки</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="{{ url_for('logout') }}">Выйти</a>
             </div>
           </li>
         </ul>
-        {% else %}
-        <li class="nav-item">
-          <a class="btn btn-primary" href="{{ url_for('login') }}">Вход</a>
-        </li>
-        {% endif %}
-        </ul>
-      </div>
-    </div>
+	  </div>
+	</div>
   </nav>
   
   <!-- Post Creation Form -->

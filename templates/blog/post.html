@@ -111,6 +111,11 @@
           <div class="card-body">
             {{ comment.body }}
           </div>
+          {% if current_user.role == 1 %}
+          <div class="card-footer">
+            <a href="/delete_comment/{{ comment.id }}" class="btn btn-danger btn-sm float-right">Удалить</a>
+          </div>
+          {% endif %}
         </div>
 		{% endfor %}
 		
