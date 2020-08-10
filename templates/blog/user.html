@@ -50,9 +50,20 @@
             <img src="{{ url_for('static', filename='avatars/' + user.avatar_id) }}" class="rounded fit-big p-3" alt="avatar">
             <h2>{{user.name}}</h2>
             {% if user.role == 1 %}
-            <p class="text-muted">Администратор</p>
+              <p class="text-muted">Администратор</p>
             {% else %}
-            <p class="text-muted">Пользователь</p>
+              {% if user.banned == 0 %}
+                <p class="text-muted">Пользователь</p>
+              {% else %}
+                <p class="text-danger">Заблокирован</p>
+              {% endif %}
+            {% endif %}
+            {% if current_user.role == 1 and current_user.id != user.id %}
+              {% if user.banned == 0 %}
+              <a href="/ban/{{ user.id }}" class="btn btn-danger btn-sm ">Заблокировать</a>
+              {% else %}
+              <a href="/unban/{{ user.id }}" class="btn btn-success btn-sm ">Разблокировать</a>
+              {% endif %}
             {% endif %}
           </div>
           </hr><br>

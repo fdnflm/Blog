@@ -30,6 +30,7 @@ class User(UserMixin, Base):
 	role = db.Column(db.Integer(), nullable=False, default=0)
 	confirmed = db.Column(db.Integer(), nullable=False, default=0)
 	confirm_token = db.Column(db.String(32))
+	banned = db.Column(db.Integer(), default=0)
 	posts = db.relationship('Post', backref='author', lazy='dynamic')
 	comments = db.relationship('Comment', backref='author', lazy=True)
 	likes = db.relationship('Like', backref='author', lazy=True)

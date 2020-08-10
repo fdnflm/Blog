@@ -127,6 +127,32 @@ def delete_comment(comment_id):
 	return redirect("/")
 
 
+@app.route("/ban/<user_id>")
+@login_required
+def ban_user(user_id):
+	if current_user.role == 1:
+		user = User.query.filter_by(id=user_id).first_or_404()
+		user.banned = 1
+		db.session.commit()
+		return redirect(request.referrer)
+	else:
+		abort(403)
+	return abort(403)
+
+
+@app.route("/unban/<user_id>")
+@login_required
+def unban_user(user_id):
+	if current_user.role == 1:
+		user = User.query.filter_by(id=user_id).first_or_404()
+		user.banned = 0
+		db.session.commit()
+		return redirect(request.referrer)
+	else:
+		abort(403)
+	return abort(403)
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
 	if current_user.is_authenticated:
@@ -311,8 +337,7 @@ def send_mail():
 	link = request.url_root + f"confirm/{token}"
 	current_user.confirm_token = token
 	db.session.commit()
-	msg.body = f"Привет, {current_user.name}!\nВы недавно зарегистрировались в нашем блоге! \
-				Чтобы активировать аккаунт, перейдите по ссылке ниже\n{link}"
+	msg.body = f"Привет, {current_user.name}!\nВы недавно зарегистрировались в нашем блоге! Чтобы активировать аккаунт, перейдите по ссылке ниже\n{link}"
 	mail.send(msg)
 	return redirect("/unconfirmed")
 
@@ -341,10 +366,12 @@ def telegram_api():
 	return {"ok": True}
 
 
-# @app.before_request
-# def before_app_request():
-# 	if request.MOBILE:
-# 		return render_template("mobile.html")
+@app.before_request
+def before_app_request():
+	if current_user.is_authenticated and current_user.banned is 1:
+		return render_template("banned.html")
+	# if request.MOBILE:
+	# 	return render_template("mobile.html")
 
 app.register_error_handler(404, not_found)
 app.register_error_handler(403, forbidden)
