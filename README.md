@@ -29,7 +29,7 @@ Personal Blog on Flask
 1. Make available full-text search.
 2. Add comments to the code.
 3. Add mobile view support
-4. Ban users
+4. ~~Ban users~~
 5. ~~Delete comments~~
 
 ## Screenshots
